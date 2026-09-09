@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OpenBridge Gateway</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar" aria-label="Navigation">
+    <div class="brand">◈ OpenBridge</div>
+    <nav>
+      <button data-page="overview" class="active">Overview</button>
+      <button data-page="providers">Providers</button>
+      <button data-page="models">Models</button>
+      <button data-page="routing">Routing</button>
+      <button data-page="keys">API Keys</button>
+      <button data-page="playground">Playground</button>
+      <button data-page="analytics">Analytics</button>
+      <button data-page="settings">Settings</button>
+    </nav>
+    <div class="side-foot">
+      <button id="themeBtn" aria-label="Toggle theme">◐ Theme</button>
+      <span id="ver"></span>
+    </div>
+  </aside>
+  <div class="main">
+    <header class="topbar">
+      <button id="menuBtn" aria-label="Menu">☰</button>
+      <strong>OpenBridge Gateway</strong>
+      <span id="runDot" class="dot ok" title="running">●</span>
+    </header>
+    <main id="page" tabindex="-1"></main>
+  </div>
+</div>
+<div id="login" class="modal hidden" role="dialog" aria-label="Admin login">
+  <form id="loginForm" class="card">
+    <h2>Welcome to OpenBridge</h2>
+    <p class="muted">Set an admin password on first launch, then sign in.</p>
+    <label>Username<input id="loginUser" value="admin" autocomplete="username"></label>
+    <label>Password<input id="loginPass" type="password" autocomplete="current-password"></label>
+    <button type="submit">Sign in</button>
+    <p id="loginErr" class="err"></p>
+  </form>
+</div>
+<div id="toast" aria-live="polite"></div>
+<script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+name: ci
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+      - run: gofmt -l .
+      - run: go vet ./...
+      - run: go test ./...
+      - run: go build -o openbridge ./cmd/openbridge
+  build-matrix:
+    runs-on: ubuntu-latest
+    needs: test
+    strategy:
+      matrix:
+        include:
+          - {goos: linux, goarch: amd64}
+          - {goos: linux, goarch: arm64}
+          - {goos: linux, goarch: arm, goarm: "7"}
+          - {goos: windows, goarch: amd64}
+          - {goos: darwin, goarch: amd64}
+          - {goos: darwin, goarch: arm64}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+      - run: CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} GOARM=${{ matrix.goarm }} go build -trimpath -o openbridge-${{ matrix.goos }}-${{ matrix.goarch }} ./cmd/openbridge

@@ -1,0 +1,4 @@
+dist/
+.openbridge/
+*.log
+.DS_Store
