@@ -14,6 +14,7 @@
       <button data-page="overview" class="active">Overview</button>
       <button data-page="providers">Providers</button>
       <button data-page="models">Models</button>
+      <button data-page="api">API</button>
       <button data-page="routing">Routing</button>
       <button data-page="keys">API Keys</button>
       <button data-page="playground">Playground</button>
@@ -25,13 +26,14 @@
       <span id="ver"></span>
     </div>
   </aside>
+  <div id="backdrop" class="hidden" aria-hidden="true"></div>
   <div class="main">
     <header class="topbar">
-      <button id="menuBtn" aria-label="Menu">☰</button>
+      <button id="menuBtn" aria-label="Menu" aria-expanded="false" aria-controls="sidebar">☰</button>
       <strong>OpenBridge Gateway</strong>
       <span id="runDot" class="dot ok" title="running">●</span>
     </header>
-    <main id="page" tabindex="-1"></main>
+    <main id="page" tabindex="-1"><p class="muted">Loading dashboard…</p></main>
   </div>
 </div>
 <div id="login" class="modal hidden" role="dialog" aria-label="Admin login">
@@ -44,7 +46,65 @@
     <p id="loginErr" class="err"></p>
   </form>
 </div>
+<div id="fatal" class="modal hidden" role="alertdialog" aria-label="Application error">
+  <div class="card">
+    <h2>Something went wrong.</h2>
+    <p class="muted small" id="fatalMsg">The dashboard failed to load.</p>
+    <div class="row">
+      <button class="btn" id="fatalReload">Reload</button>
+      <button class="btn ghost" id="fatalDiag">Open diagnostics</button>
+    </div>
+  </div>
+</div>
+<div id="diag" class="modal hidden" role="dialog" aria-label="Diagnostics">
+  <div class="card">
+    <h2>Diagnostics</h2>
+    <div class="kv"><span>URL</span><b class="mono small" id="dgUrl"></b></div>
+    <div class="kv"><span>App loaded</span><b id="dgBoot"></b></div>
+    <div class="kv"><span>Last error</span><b class="small" id="dgErr"></b></div>
+    <div class="kv"><span>API /health</span><b class="small" id="dgHealth"></b></div>
+    <div class="kv"><span>User agent</span><b class="small" id="dgUa"></b></div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn" id="dgReload">Reload</button>
+      <button class="btn ghost" id="dgClose">Close</button>
+    </div>
+  </div>
+</div>
 <div id="toast" aria-live="polite"></div>
+<noscript><div style="padding:24px;font-family:system-ui">OpenBridge dashboard needs JavaScript. API is still available at <code>/v1</code> and <code>/health</code>.</div></noscript>
+<script>
+window.__obg_boot=false;window.__obg_err='';
+window.addEventListener('error',function(e){if(!window.__obg_boot){window.__obg_err=(e&&e.message)||'script error';}},true);
+window.addEventListener('unhandledrejection',function(e){if(!window.__obg_boot){window.__obg_err=(e&&e.reason&&e.reason.message)||'load failed';}});
+setTimeout(function(){
+  if(window.__obg_boot)return;
+  var f=document.getElementById('fatal');if(f)f.classList.remove('hidden');
+  var m=document.getElementById('fatalMsg');
+  if(m)m.textContent='The dashboard failed to load ('+(window.__obg_err||'app.js did not start')+'). Check /health and network, then reload.';
+  var p=document.getElementById('page');
+  if(p&&!p.dataset.rendered)p.innerHTML='<div class="card"><h3>Something went wrong.</h3><p class="muted">Dashboard script did not start. Press Reload or Open diagnostics.</p></div>';
+},2500);
+document.getElementById('fatalReload').addEventListener('click',function(){location.reload();});
+document.getElementById('fatalDiag').addEventListener('click',function(){
+  document.getElementById('fatal').classList.add('hidden');
+  openDiag();
+});
+function openDiag(){
+  try{
+    document.getElementById('dgUrl').textContent=location.href;
+    document.getElementById('dgBoot').textContent=window.__obg_boot?'yes':'no';
+    document.getElementById('dgErr').textContent=window.__obg_err||'(none)';
+    document.getElementById('dgUa').textContent=navigator.userAgent;
+    document.getElementById('dgHealth').textContent='checking…';
+    fetch('/health').then(function(r){return r.text();}).then(function(t){
+      document.getElementById('dgHealth').textContent='OK '+t.slice(0,80);
+    }).catch(function(e){document.getElementById('dgHealth').textContent='FAIL '+e.message;});
+  }catch(e){}
+  document.getElementById('diag').classList.remove('hidden');
+}
+document.getElementById('dgClose').addEventListener('click',function(){document.getElementById('diag').classList.add('hidden');});
+document.getElementById('dgReload').addEventListener('click',function(){location.reload();});
+</script>
 <script src="/app.js"></script>
 </body>
 </html>

@@ -482,6 +482,10 @@ func (s *Server) handleSettingsGet(w http.ResponseWriter, r *http.Request) {
 		for rows.Next() {
 			var k, v string
 			if err := rows.Scan(&k, &v); err == nil {
+				// never expose secrets/hashes to the dashboard payload
+				if k == "admin_pass_hash" || k == "admin_user" {
+					continue
+				}
 				m[k] = v
 			}
 		}

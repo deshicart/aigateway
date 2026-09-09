@@ -39,7 +39,24 @@ th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line)}
 pre{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;overflow:auto;white-space:pre-wrap}
 .kv{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:13px}
 .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+html,body{overflow-x:hidden}
+#page{min-height:40vh}
+#backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:30}
+#backdrop.hidden{display:none}
+#fatal{z-index:80}
+#diag{z-index:90}
+#diag .card,#fatal .card{max-width:520px;width:100%}
+.break{overflow-wrap:anywhere;word-break:break-word}
+.kv{min-width:0}
+.kv span{flex-shrink:0}
+.kv b{min-width:0;overflow-wrap:anywhere;text-align:right}
+.card,.grid,#page{min-width:0;max-width:100%}
+a{color:inherit}
+#themeBtn{background:none;border:1px solid var(--line);border-radius:8px;color:var(--fg);padding:6px 10px}
 @media(max-width:720px){
+  .btn,nav button,#menuBtn{min-height:40px}
+  th,td{padding:6px}
+  pre{font-size:12px}
   #sidebar{position:fixed;z-index:40;left:0;top:0;transform:translateX(-100%);transition:transform .18s}
   #sidebar.open{transform:none}
   #menuBtn{display:block}
